@@ -2,6 +2,9 @@
 """
 Created on Sat Apr 11 15:47:44 2020
 
+Found this link to be very helpful: https://pbpython.com/python-word-template.html
+
+
 @author: CSR1
 """
 
@@ -49,10 +52,15 @@ def pad_the_df(df, max_rows = 12):
     df.replace(nan,'place_holder', inplace = True)
     return df
     
-def create_page(df,file_name = None, branch_license_number = None, company_license_number = None):
+def create_page(df, office_phone_number, office_street_address, office_city_state_zip, 
+                template ="12 cards template test2.docx", file_name = None,
+                branch_license_number = None, company_license_number = None):
     '''
     Create the final printed page.  To-do: add the template, sample inputs and sample outputs
     '''
+    df['street_address'] = office_street_address
+    df['phone_number'] = office_phone_number
+    df['city_state_zip'] = office_city_state_zip
     if company_license_number is None:
         df['company_license_number'] = '0226004377'
         print('Using the default company license number of 0226004377' )
@@ -61,7 +69,7 @@ def create_page(df,file_name = None, branch_license_number = None, company_licen
         print('Using the default branch license number of 0226004375\n')
     
     print('Creating the page of contact cards...')
-    template = "12 cards template test2.docx"
+    template = template
     document = MailMerge(template)
     
     
@@ -181,21 +189,76 @@ def create_page(df,file_name = None, branch_license_number = None, company_licen
         lic_num_11 = fix(row_11['license_number']),
         lic_num_12 = fix(row_12['license_number']),
         
+        street_address_1 = fix(row_1['street_address']),
+        street_address_2 = fix(row_2['street_address']),
+        street_address_3 = fix(row_3['street_address']),
+        street_address_4 = fix(row_4['street_address']),
+        street_address_5 = fix(row_5['street_address']),
+        street_address_6 = fix(row_6['street_address']),
+        street_address_7 = fix(row_7['street_address']),
+        street_address_8 = fix(row_8['street_address']),
+        street_address_9 = fix(row_9['street_address']),
+        street_address_10 = fix(row_10['street_address']),
+        street_address_11 = fix(row_11['street_address']),
+        street_address_12 = fix(row_12['street_address']),
+        
+        city_state_zip_1 = fix(row_1['city_state_zip']),
+        city_state_zip_2 = fix(row_2['city_state_zip']),
+        city_state_zip_3 = fix(row_3['city_state_zip']),
+        city_state_zip_4 = fix(row_4['city_state_zip']),
+        city_state_zip_5 = fix(row_5['city_state_zip']),
+        city_state_zip_6 = fix(row_6['city_state_zip']),
+        city_state_zip_7 = fix(row_7['city_state_zip']),
+        city_state_zip_8 = fix(row_8['city_state_zip']),
+        city_state_zip_9 = fix(row_9['city_state_zip']),
+        city_state_zip_10 = fix(row_10['city_state_zip']),
+        city_state_zip_11 = fix(row_11['city_state_zip']),
+        city_state_zip_12 = fix(row_12['city_state_zip']),
+        
+        phone_1 = fix(row_1['phone_number']),
+        phone_2 = fix(row_2['phone_number']),
+        phone_3 = fix(row_3['phone_number']),
+        phone_4 = fix(row_4['phone_number']),
+        phone_5 = fix(row_5['phone_number']),
+        phone_6 = fix(row_6['phone_number']),
+        phone_7 = fix(row_7['phone_number']),
+        phone_8 = fix(row_8['phone_number']),
+        phone_9 = fix(row_9['phone_number']),
+        phone_10 = fix(row_10['phone_number']),
+        phone_11 = fix(row_11['phone_number']),
+        phone_12 = fix(row_12['phone_number']),
         )
     
     if not os.path.exists('output/'):
         os.mkdir('output/')
     
+    df = df.loc[df['last_name'] != 'place_holder']
     if file_name is None:
-        n = df.shape[0]
-        
+        n = df.shape[0]            
         file_name = df['last_name'].iloc[0] + '_to_' + df['last_name'].iloc[n-1]
     document.write('output/' + file_name + '.docx')
     print('Done')
-    
+
+def template_fields(template, return_them = False):
+        document = MailMerge(template)
+        print(sorted(document.get_merge_fields()))
+        if return_them:
+            return sorted(document.get_merge_fields())
+        
 if __name__ == '__main__':
     
+    'Generate files for the McLean office'
     df = pd.read_csv("test_licensure_workbook_mclean.csv")
+    template_fields('template-one license.docx')
+    
+    mclean = ['6631 Old Dominion Dr','McLean, VA 22101','703.556.4222']
     pages = split_the_data(df)
-    [create_page(page) for page in pages]
+    [create_page(df, office_phone_number = mclean[2], office_street_address = mclean[0],
+                office_city_state_zip = mclean[1], template ="template-one license.docx")
+     for df in pages]
+
+
+    
+    #[create_page(page) for page in pages]
+    #test = pad_the_df(pages[5])
     
