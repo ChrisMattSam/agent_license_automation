@@ -15,7 +15,7 @@ import os
 from agent_license_automation.generation_functions import fix, pre_process, pad_the_df, template_fields, split_the_data
 
 def one_address_page(df, template, file_name = None, branch_license_number = None, 
-                company_license_number = None):
+                company_license_number = None, p = None):
     '''
     Create the final printed page.  To-do: add the template, sample inputs and sample outputs
     '''
@@ -51,7 +51,6 @@ def one_address_page(df, template, file_name = None, branch_license_number = Non
     row_10 = l[9]
     row_11 = l[10]
     row_12 = l[11]
-    
     
     document = MailMerge(template)
     document.merge(
@@ -174,21 +173,22 @@ def one_address_page(df, template, file_name = None, branch_license_number = Non
         city_state_zip_11 = fix(row_11['city_state_zip']),
         city_state_zip_12 = fix(row_12['city_state_zip']),
         
-        phone_1 = fix(row_1['phone_number']),
-        phone_2 = fix(row_2['phone_number']),
-        phone_3 = fix(row_3['phone_number']),
-        phone_4 = fix(row_4['phone_number']),
-        phone_5 = fix(row_5['phone_number']),
-        phone_6 = fix(row_6['phone_number']),
-        phone_7 = fix(row_7['phone_number']),
-        phone_8 = fix(row_8['phone_number']),
-        phone_9 = fix(row_9['phone_number']),
-        phone_10 = fix(row_10['phone_number']),
-        phone_11 = fix(row_11['phone_number']),
-        phone_12 = fix(row_12['phone_number']),
+        phone_1 = row_1['phone_number'],
+        phone_2 = row_2['phone_number'],
+        phone_3 = row_3['phone_number'],
+        phone_4 = row_4['phone_number'],
+        phone_5 = row_5['phone_number'],
+        phone_6 = row_6['phone_number'],
+        phone_7 = row_7['phone_number'],
+        phone_8 = row_8['phone_number'],
+        phone_9 = row_9['phone_number'],
+        phone_10 = row_10['phone_number'],
+        phone_11 = row_11['phone_number'],
+        phone_12 = row_12['phone_number'],
         )
     
-    p = 'output/one license/'
+    if p is None:
+        p = 'output/one license/'
     if not os.path.exists(p):
         os.mkdir(p)
     
@@ -199,8 +199,8 @@ def one_address_page(df, template, file_name = None, branch_license_number = Non
     document.write(p + file_name + '.docx')
     print('Done')
     
-def two_addresses(df, template, file_name = None, branch_license_number = None, 
-                company_license_number = None):
+def two_address_page(df, template, file_name = None, branch_license_number = None, 
+                company_license_number = None, p = None):
     '''
     Create the final printed page.  To-do: add the template, sample inputs and sample outputs
     '''
@@ -413,13 +413,15 @@ def two_addresses(df, template, file_name = None, branch_license_number = None,
         phone_12 = fix(row_12['phone_number']),
         )
     
-    p = 'output/two licenses/'
+    if p is None:
+        p = 'output/two licenses/'
     if not os.path.exists(p):
         os.mkdir(p)
     
     df = df.loc[df['last_name'] != 'place_holder']
     if file_name is None:
         n = df.shape[0]            
+        
         file_name = df['last_name'].iloc[0] + '_to_' + df['last_name'].iloc[n-1]
     document.write(p + file_name + '.docx')
     print('Done')
@@ -427,14 +429,20 @@ def two_addresses(df, template, file_name = None, branch_license_number = None,
 
 if __name__ == '__main__':
     
-    'Generate files for the McLean office'
-    df = pre_process(pd.read_csv("licensure_workbook.csv"))
-    template_fields('template-one license.docx')
+    'Generate TRID cards for agents licensed in one state'
+    df = pre_process(pd.read_csv("one license.csv"))
+    [one_address_page(page, 'template-one license.docx') for page in split_the_data(df)]
     
-    pages = split_the_data(df)
-    [one_address_page(page, 'template-one license.docx') for page in pages]
+    'Generate TRID cards for agents licensed in two states'
+    df = pre_process(pd.read_csv("two licenses.csv"))
+    [two_address_page(page, 'template-two licenses.docx') for page in split_the_data(df)]
     
-    df2 = pre_process(pd.read_csv('two_license_workbook.csv'))
-    pages2 = split_the_data(df2)
-    two_addresses(pages2[0], "template-two licenses.docx")
+    'Generate TRID cards for agents licensed in three states, breaking it up into 2-state and 1-state'
+    df = pre_process(pd.read_csv("three licenses-1 of 2.csv"))
+    [two_address_page(page, 'template-two licenses.docx', p = "output/three licenses/", file_name = "2 of three licenses") for page in split_the_data(df)]
+    df = pre_process(pd.read_csv("three licenses-2 of 2.csv"))
+    [one_address_page(page, 'template-one license.docx', p = "output/three licenses/", file_name = "1 of three licenses") for page in split_the_data(df)]
+    
+    
+    
     

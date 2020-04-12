@@ -43,6 +43,7 @@ def split_the_data(df, n = 12):
             holder.append(df.head(n))
         df = df.iloc[n:]
         i +=1
+    holder = [h for h in holder if h.shape[0] > 0]
     return holder
 
 def template_fields(template, return_them = False):
@@ -67,7 +68,9 @@ def pre_process(df):
     df[['last_name','first_name']] = df.name.str.split(',', expand = True)
     df.drop(columns = 'name', inplace = True)
     df['first_name'] = df['first_name'].apply(lambda x: x.lstrip()) #remove leading space
+    for col in ['license_number', 'license_number_1', 'license_number_2', 'license_number_3']:
+        if col in df:
+            df[col]= df[col].astype('str').str.replace('p0','0')
     return df
-
 
 
