@@ -53,24 +53,12 @@ def template_fields(template, return_them = False):
             return sorted(document.get_merge_fields())
 
 def pre_process(df):
-    '''
-    Attach the appropriate office address based on 'office' column, then split the names
-    into first and last names, correcting the first name for the leading space that the split
-    fxn returns for it
-    '''
-    mclean = ['mclean', '6631 Old Dominion Dr','McLean, VA 22101','703.556.4222']
-    rockville = ['rockville', '1 Research Ct #100','Rockvile, MD 20850','301.519.8100']
-    arlington = ['arlington', '5904 Washington Blvd', 'Arlington, VA 22205', '571.565.2320']
-    addresses = pd.DataFrame([mclean,rockville,arlington])
-    addresses.columns = ['office','street_address','city_state_zip','phone_number']
-            
-    df = df.merge(addresses, on = 'office')
+    
     df[['last_name','first_name']] = df.name.str.split(',', expand = True)
     df.drop(columns = 'name', inplace = True)
     df['first_name'] = df['first_name'].apply(lambda x: x.lstrip()) #remove leading space
-    for col in ['license_number', 'license_number_1', 'license_number_2', 'license_number_3']:
-        if col in df:
-            df[col]= df[col].astype('str').str.replace('p0','0')
+    for col in ['license_number_1', 'license_number_2', 'license_number_3']:
+        df[col]= df[col].astype('str').str.replace('p0','0').replace(' ','')
     return df
 
 
