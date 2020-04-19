@@ -34,8 +34,7 @@ def one_address_page(df, template, file_name = None, branch_license_number = Non
     
     'These are the first 12 rows of the dataset, representing 12 agents'
     locs = list(range(0,12))
-    if df.shape[0] < 12:
-        df = pad_the_df(df)
+    df = pad_the_df(df)
     
     
     l = [df.iloc[i] for i in locs]

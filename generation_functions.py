@@ -14,11 +14,13 @@ def pad_the_df(df, max_rows = 12):
     of it to make the new dataframe have that number of rows
     '''
     i = 0
-    
-    while i <= 11:
-        df = df.append(pd.Series(dtype = 'str'), ignore_index = True)
-        i +=1
-    return df.replace(nan,'place_holder').head(12)
+    if df.shape[0] >= max_rows:
+        return df
+    else:
+        while i <= 11:
+            df = df.append(pd.Series(dtype = 'str'), ignore_index = True)
+            i +=1
+        return df.replace(nan,'place_holder').head(12)
 
 def fix(number):
     if type(number) is not str:
@@ -53,7 +55,10 @@ def template_fields(template, return_them = False):
             return sorted(document.get_merge_fields())
 
 def pre_process(df):
+    '''
+    Split the first and last name into separate columns,
     
+    '''
     df[['last_name','first_name']] = df.name.str.split(',', expand = True)
     df.drop(columns = 'name', inplace = True)
     df['first_name'] = df['first_name'].apply(lambda x: x.lstrip()) #remove leading space
