@@ -20,7 +20,7 @@ def format_to_print(df):
 
     for col in ['_1', '_2', '_3']:
         #Precede the chars "License #:" before the actual license number value
-        df.loc[df['license_number'+col].str.len() >3,['state'+col]] = df['state'+col] + ' Firm License #: '
+        df.loc[df['license_number'+col].str.len() >3,['state'+col]] = df['state'+col] + ' License #: '
         #If a license number doesnt have an expiration date, add "missing" to the expiration date"
         df.loc[(df['license_number'+col].str.len() > 3) & (df['expiration_date'+col].isna()), ['expiration_date'+col]] = 'missing'
         #If an agent is licensed in 3 states, precede the expiration date value with "Exp Date:"
@@ -40,9 +40,13 @@ def format_to_print(df):
         one_license[col+'1'] = 'nan'
     df = pd.concat([df, one_license])
     
-    'based on what office they work in, print that state on the back of the TRID card'
+    'based on what office they work in, print that state and branch license number on the back of the TRID card'
     df['office_state'] = 'VA'
     df.loc[df['office'] == 'rockville',['office_state']] = 'MD'
+    df['office_state_license_number'] = '0226004375'
+    df.loc[df['office_state'] == 'MD',['office_state_license_number']] = '640891'
+    df.loc[df['office_state'] == 'DC', ['office_state_license_number']] = 'RE0200200243'
+    
     df['office_state'] = df['office_state'] + ' Firm License #'
     
     'remove nan so that the final output doesnt have "nan" in it'
@@ -77,6 +81,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
     document.merge(
         
         #box 1
+        office_state_lic_num_1 = box_1['office_state_license_number'],
         office_state_1 = box_1['office_state'],
         first_1 = box_1['first_name'],
         last_1 = box_1['last_name'],
@@ -94,6 +99,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_1_3 = box_1['expiration_date_3'],
     
         #box 2
+        office_state_lic_num_2 = box_2['office_state_license_number'],
         office_state_2 = box_1['office_state'],
         first_2 = box_2['first_name'],
         last_2 = box_2['last_name'],
@@ -111,6 +117,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_2_3 = box_2['expiration_date_3'],
     
         #box 3
+        office_state_lic_num_3 = box_3['office_state_license_number'],
         office_state_3 = box_3['office_state'],
         first_3 = box_3['first_name'],
         last_3 = box_3['last_name'],
@@ -128,6 +135,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_3_3 = box_3['expiration_date_3'],
     
         #box 4
+        office_state_lic_num_4 = box_4['office_state_license_number'],
         office_state_4 = box_4['office_state'],
         first_4 = box_4['first_name'],
         last_4 = box_4['last_name'],
@@ -145,6 +153,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_4_3 = box_4['expiration_date_3'],
         
         #box 5
+        office_state_lic_num_5 = box_5['office_state_license_number'],
         office_state_5 = box_5['office_state'],
         first_5 = box_5['first_name'],
         last_5 = box_5['last_name'],
@@ -162,6 +171,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_5_3 = box_5['expiration_date_3'],
         
         #box 6
+        office_state_lic_num_6 = box_6['office_state_license_number'],
         office_state_6 = box_6['office_state'],
         first_6 = box_6['first_name'],
         last_6 = box_6['last_name'],
@@ -179,6 +189,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_6_3 = box_6['expiration_date_3'],
         
         #box 7
+        office_state_lic_num_7 = box_7['office_state_license_number'],
         office_state_7 = box_7['office_state'],
         first_7 = box_7['first_name'],
         last_7 = box_7['last_name'],
@@ -196,6 +207,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_7_3 = box_7['expiration_date_3'],
         
         #box 8
+        office_state_lic_num_8 = box_8['office_state_license_number'],
         office_state_8 = box_8['office_state'],
         first_8 = box_8['first_name'],
         last_8 = box_8['last_name'],
@@ -213,6 +225,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_8_3 = box_8['expiration_date_3'],
         
         #box 9
+        office_state_lic_num_9 = box_9['office_state_license_number'],
         office_state_9 = box_9['office_state'],
         first_9 = box_9['first_name'],
         last_9 = box_9['last_name'],
@@ -230,6 +243,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_9_3 = box_9['expiration_date_3'],
         
         #box 10
+        office_state_lic_num_10 = box_10['office_state_license_number'],
         office_state_10 = box_10['office_state'],
         first_10 = box_10['first_name'],
         last_10 = box_10['last_name'],
@@ -247,6 +261,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_10_3 = box_10['expiration_date_3'],
         
         #box 11
+        office_state_lic_num_11 = box_11['office_state_license_number'],
         office_state_11 = box_11['office_state'],
         first_11 = box_11['first_name'],
         last_11 = box_11['last_name'],
@@ -264,6 +279,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         exp_date_11_3 = box_11['expiration_date_3'],
         
         #box 12
+        office_state_lic_num_12 = box_12['office_state_license_number'],
         office_state_12 = box_12['office_state'],
         first_12 = box_12['first_name'],
         last_12 = box_12['last_name'],
