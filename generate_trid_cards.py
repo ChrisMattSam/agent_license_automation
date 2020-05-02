@@ -100,7 +100,7 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
     
         #box 2
         office_state_lic_num_2 = box_2['office_state_license_number'],
-        office_state_2 = box_1['office_state'],
+        office_state_2 = box_2['office_state'],
         first_2 = box_2['first_name'],
         last_2 = box_2['last_name'],
         
@@ -302,7 +302,8 @@ def make_trid_cards(df, output_dir, template = 'new template.docx', doc_name = N
         if type(doc_name) is str: file_name = doc_name
     document.write(output_dir + '/' +file_name + '.docx')
     print('Done')
-    
+
+
 if __name__ == "__main__":
     df = format_to_print(pre_process(pd.read_csv("all_agent_info.csv")))
     
